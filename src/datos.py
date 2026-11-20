@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+import hashlib
 
 import pandas as pd
 import snowflake.connector
@@ -56,3 +57,8 @@ def agregar_target(obt, dias=7):
     # Los ultimos dias no tienen 7 dias de futuro observados: se excluyen
     ultima = obt["fecha_corte"].max() - pd.Timedelta(days=dias)
     return obt[obt["fecha_corte"] <= ultima].reset_index(drop=True)
+
+def huella(df):
+    """Primeros 12 caracteres del hash MD5 de una tabla: si cambia un solo dato, cambia la huella."""
+    valores = pd.util.hash_pandas_object(df, index=False).values
+    return hashlib.md5(valores.tobytes()).hexdigest()[:12]

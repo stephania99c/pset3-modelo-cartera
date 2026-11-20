@@ -70,14 +70,14 @@ def cargar_base():
     base = base[base["dias_mora"] > 0]
     return base.sort_values("fecha_corte").reset_index(drop=True)
 
-
 def cargar_y_dividir():
     base = cargar_base()
     entrenamiento = base[base["fecha_corte"] <= FIN_ENTRENAMIENTO]
     prueba = base[base["fecha_corte"] >= INICIO_PRUEBA]
     columnas = NUMERICAS + CATEGORICAS + YA_LISTAS
     return (entrenamiento[columnas], prueba[columnas],
-            entrenamiento[OBJETIVO], prueba[OBJETIVO])
+            entrenamiento[OBJETIVO], prueba[OBJETIVO],
+            entrenamiento["numero_operacion"])
 
 
 def construir_preparacion():
@@ -97,7 +97,7 @@ def construir_preparacion():
 
 # Esto corre con "python src/pipeline.py", pero no cuando un notebook lo importa.
 if __name__ == "__main__":
-    X_ent, X_prueba, y_ent, y_prueba = cargar_y_dividir()
+    X_ent, X_prueba, y_ent, y_prueba, grupos_ent = cargar_y_dividir()
     preparacion = construir_preparacion()
     X_ent_listo = preparacion.fit_transform(X_ent)
     X_prueba_listo = preparacion.transform(X_prueba)
